@@ -1,0 +1,249 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ document.code }}{% endblock %}
+
+{#{% block breadcrumbs %}#}
+{#    {{ breadcrumb( 'Contracts' | trans(), path('documents_list') ) }}#}
+{#    {{ breadcrumb( document.code, path('document_details', {'id': document.id}) ) }}#}
+{#{% endblock %}#}
+
+{% block body %}
+
+    <!-- START Navigation Tree & Search -->
+    <div class="col-lg-3">
+        <div class="hr-text hr-text-left m-t-0 m-b-1">
+            <h6 class="text-inverse"><strong>{{ "Document details" | trans() }}</strong></h6>
+        </div>
+
+        <!-- START Table Project Details -->
+        <table class="table table-condensed">
+            <tbody>
+            <!-- START ROW Project Details  -->
+            <tr>
+                <td class="v-a-m">
+                    {{ 'Owner' | trans() }}
+                </td>
+                <td class="v-a-m text-right">
+                    <span>{{ document.owner.fullName }}</span>
+                </td>
+            </tr>
+            <!-- END ROW Project Details  -->
+            <!-- START ROW Project Details  -->
+            <tr>
+                <td class="v-a-m">
+                    {{ 'Start at' | trans() }}
+                </td>
+                <td class="v-a-m text-right">
+                    <span>{{ document.startAt | date('d.m.Y') }}</span>
+                </td>
+            </tr>
+            <!-- END ROW Project Details  -->
+            <!-- START ROW Project Details  -->
+            <tr>
+                <td class="v-a-m">
+                    {{ 'End at' | trans() }}
+                </td>
+                <td class="v-a-m text-right">
+                    <span>{{ document.endAt | date('d.m.Y') }}</span>
+                </td>
+            </tr>
+            <!-- END ROW Project Details  -->
+            <!-- START ROW Project Details  -->
+            <tr>
+                <td class="v-a-m">
+                    {{ 'Amount monthly fee' | trans() }}
+                </td>
+                <td class="v-a-m text-right">
+                    <span>{{ document.amountMonthlyFee | number_format(2, '.', ',') }} <i class="fa fa-fw fa-rouble"></i></span>
+                </td>
+            </tr>
+            <!-- END ROW Project Details  -->
+            <!-- START ROW Project Details  -->
+            <tr>
+                <td class="v-a-m">
+                    {{ 'Created at' | trans() }}
+                </td>
+                <td class="v-a-m text-right">
+                    <span>{{ document.createdAt | date('d.m.Y') }}</span>
+                </td>
+            </tr>
+            <!-- END ROW Project Details  -->
+            </tbody>
+        </table>
+    </div>
+    <!-- END Navigation Tree & Search -->
+
+    <div class="col-lg-9">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <h3 class="f-w-300 m-t-1">{{ document.code }}</h3>
+            </div>
+        </div>
+
+        <div class="tabbable-line tabs">
+            <div class="pull-right" style="margin-top: 3px;">
+                <div class="btn-toolbar pull-right">
+                    <div class="dropdown pull-right m-l-1">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-fw fa-gear"></i> {{ "Actions" | trans() }} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li>
+                                <a href=""
+                                   class="edit-document"
+                                   data-action="{{ path('edit_document', {'id': document.id}) }}"
+                                   data-start-at="{{ document.startAt | date('d.m.Y') }}"
+                                   data-end-at="{{ document.endAt | date('d.m.Y') }}"
+                                   data-target=".editDocumentModal"
+                                   data-toggle="modal"
+                                   title="{{ 'Edit' | trans() }}"
+                                ><i class="fa fa-fw fa-pencil m-r-1"></i>{{ 'Edit' | trans() }}</a>
+                            </li>
+                            <li>
+                                <a href=""
+                                   class="reject-document"
+                                   data-action="{{ path('reject_document', {'id': document.id}) }}"
+                                   data-target=".rejectDocumentModal"
+                                   data-toggle="modal"
+                                   title="{{ 'Reject' | trans() }}"
+                                ><i class="fa fa-fw fa-close text-danger m-r-1"></i>{{ 'Reject' | trans() }}</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a href="{{ path('export_document', {'id': document.id}) }}"
+                       class="btn btn-success"
+                       title="{{ 'Export' | trans() }}"
+                       target="_blank"
+                    ><i class="fa fa-fw fa-file-word-o text-inverse"></i>{{ 'Export' | trans() }}</a>
+
+                    <a class="btn btn-primary"
+                       data-target=".addDocumentItemModal"
+                       data-toggle="modal"
+                    ><i class="fa fa-plus"></i> {{ 'Add apartment' | trans() }}</a>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+        <div class="panel panel-default  no-bg b-gray-dark tab m-t-2">
+            <table class="table table-hover" id="table-items">
+                <thead>
+                    <tr>
+                        <th class="small text-muted text-uppercase" style="width:25px;">№</th>
+                        <th class="small text-muted text-uppercase">
+                            <strong>{{ "Address" | trans() }}</strong>
+                        </th>
+                        <th class="small text-muted text-uppercase">
+                            <strong>{{ "Amount compensation" | trans() }}</strong>
+                        </th>
+                        <th style="width: 125px;" class="small text-muted text-uppercase">
+                            <strong>{{ "Actions" | trans() }}</strong>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set totalAmount = 0 %}
+                    {% for item in document.securityApartments %}
+                        {% set totalAmount = item.compensation %}
+                        <tr>
+                            <td class="v-a-m">#{{ loop.index }}</td>
+                            <td class="v-a-m">{{ item.apartment.address }}</td>
+                            <td class="v-a-m">{{ item.compensation | number_format(2, '.', ',') }} <i class="fa fa-fw fa-rouble"></i></td>
+                            <td class="v-a-m">
+                                <div class="dropdown">
+                                    <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <i class="fa fa-fw fa-gear"></i> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>
+                                            <a href=""
+                                               class="edit-document-item"
+                                               data-action="{{ path('edit_document_item', {'id': document.id, 'itemId': item.id}) }}"
+                                               data-compensation="{{ item.compensation }}"
+                                               data-number-apartment="{{ item.apartment.number }}"
+                                               data-number-house="{{ item.apartment.house.number }}"
+                                               data-street="{{ item.apartment.house.street.id }}"
+                                               data-region="{{ item.apartment.house.region.id }}"
+                                               data-target=".editDocumentItemModal"
+                                               data-toggle="modal"
+                                               title="{{ 'Edit apartment' | trans() }}"><i class="fa fa-fw fa-pencil m-r-1"></i>{{ 'Edit apartment' | trans() }}</a>
+                                        </li>
+                                        <li>
+                                            <a href=""
+                                               class="remove-document-item"
+                                               data-action="{{ path('remove_document_item', {'id': document.id, 'itemId': item.id}) }}"
+                                               data-target=".removeDocumentItemModal"
+                                               data-toggle="modal"
+                                               title="{{ 'Remove apartment' | trans() }}"><i class="fa fa-fw fa-close text-danger m-r-1"></i>{{ 'Remove apartment' | trans() }}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="border-top-white">
+                        <td colspan="2"><strong>{{ 'Total' | trans() ~ ' :'}}</strong></td>
+                        <td colspan="2">
+                            <h5 class="m-t-0 m-b-0 f-w-300" style="white-space: nowrap;">
+                                <strong>{{ totalAmount | number_format(2, '.', ',') }} <i class="fa fa-fw fa-rouble"></i></strong>
+                            </h5>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% import 'document/partial/form.html.twig' as documentForm %}
+    {% import 'document/partial/item_form.html.twig' as documentItemForm %}
+    {% import 'document/partial/remove_document_item_form.html.twig' as removeDocumentItemForm %}
+    {% import 'document/partial/reject_document_form.html.twig' as rejectDocumentForm %}
+
+    {% set editDocumentVars = {
+        'class': 'editDocumentModal',
+        'formId': 'editDocumentForm',
+        'title': 'Edit document',
+        'content': documentForm.inputs(),
+        'submitTitle': 'Save',
+
+    } %}
+
+    {% set addDocumentItemVars = {
+        'class': 'addDocumentItemModal',
+        'formId': 'addDocumentItemForm',
+        'title': 'Add apartment',
+        'content': documentItemForm.inputs(regions, streets),
+        'submitTitle': 'Add',
+        'formAction': path('add_document_item', {'id': document.id}),
+    } %}
+
+    {% set editDocumentItemVars = {
+        'class': 'editDocumentItemModal',
+        'formId': 'editDocumentItemForm',
+        'title': 'Edit apartment',
+        'content': documentItemForm.inputs(regions, streets),
+        'submitTitle': 'Save',
+    } %}
+
+    {% set removeDocumentItemVars = {
+        'class': 'removeDocumentItemModal',
+        'formId': 'removeDocumentItemForm',
+        'title': 'Remove apartment',
+        'content': removeDocumentItemForm.inputs(),
+        'submitTitle': 'Remove'
+    } %}
+
+    {% set rejectDocumentVars = {
+        'class': 'rejectDocumentModal',
+        'formId': 'rejectDocumentForm',
+        'title': 'Reject',
+        'content': rejectDocumentForm.inputs(),
+        'submitTitle': 'Reject'
+    } %}
+
+    {% include 'partial/modal.html.twig' with editDocumentVars %}
+    {% include 'partial/modal.html.twig' with addDocumentItemVars %}
+    {% include 'partial/modal.html.twig' with editDocumentItemVars %}
+    {% include 'partial/modal.html.twig' with removeDocumentItemVars %}
+    {% include 'partial/modal.html.twig' with rejectDocumentVars %}
+{% endblock %}

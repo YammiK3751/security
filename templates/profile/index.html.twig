@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Profile' | trans() }}{% endblock %}
+
+{% block body %}
+    <div class="media m-b-3 m-l-3">
+        <div class="media-left media-middle p-r-2">
+            <div class="avatar">
+                <div class="avatar-circle">
+                    <img alt="User" src="/images/noavatar.png">
+{#                    <img class="img-circle" src="{{ user.imageUrl }}" alt="Avatar">#}
+                </div>
+            </div>
+        </div>
+        <div class="media-body">
+            <h3 class="f-w-300 m-b-0 m-t-1">{{ user.fullname }}<span class="text-muted"> <span class="m-r-1 m-l-1">/</span></span> Редактировать профиль</h3>
+            <p class="m-t-0"> <span class="label label-success label-outline text-uppercase m-r-1">Online</span></p>
+        </div>
+    </div>
+
+    <div class="col-lg-10 col-lg-offset-1">
+        <form action="{{ path('profile') }}" class="form-horizontal pill" method="post" enctype="multipart/form-data">
+            <div class="panel panel-default no-bg b-gray-dark">
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label for="profile-edit-first-name" class="col-lg-2 control-label"> {{ 'First name' | trans() }} <span class="text-danger">*</span></label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" id="profile-edit-first-name" placeholder="{{ 'First name' | trans() }}" value="{{ user.firstName }}" name="profile[firstname]" required>
+                        </div>
+                        <label for="profile-edit-username" class="col-sm-2 control-label">{{ 'Username' | trans() }} <span class="text-danger">*</span></label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" id="profile-edit-username" value="{{ user.username }}"  name="profile[username]" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile-edit-middle-name" class="col-lg-2 control-label">{{ 'Middle name' | trans() }}</label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" id="profile-edit-middle-name" placeholder="{{ 'Middle name' | trans() }}" value="{{ user.middleName }}" name="profile[middlename]">
+                        </div>
+                        <label for="profile-edit-email" class="col-sm-2 control-label">{{ 'Email' | trans() }} <span class="text-danger">*</span></label>
+                        <div class="col-lg-4">
+                            <input type="email" class="form-control" id="profile-edit-email" value="{{ user.email }}"  name="profile[email]">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile-edit-last-name" class="col-lg-2 control-label">{{ 'Last name' | trans() }} <span class="text-danger">*</span></label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" id="profile-edit-last-name" placeholder="{{ 'Last name' | trans() }}" value="{{ user.lastName }}"  name="profile[lastname]" required>
+                        </div>
+                        <label for="profile-edit-phone" class="col-sm-2 control-label">{{ 'Phone' | trans() }}</label>
+                        <div class="col-lg-4">
+                            <input type="tel" class="form-control" id="profile-edit-phone" value="{{ user.phone }}" name="profile[phone]">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button type="submit" class="btn btn-primary">Обновить профиль</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

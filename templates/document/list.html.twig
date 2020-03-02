@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "Contracts" | trans() }}{% endblock %}
+
+{% block body %}
+    <form class="form-inline filter-form" method="get" action="{{ path('documents_list') }}">
+        <div class="panel panel-default no-bg  b-gray-dark">
+            <div class="panel-body">
+                <button type="button" class="btn btn-primary pull-right add-document" data-toggle="modal" data-target=".addDocumentModal"><i class="fa fa-plus"></i> {{ 'Add document' | trans() }}</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Code' | trans() }}</strong></th>
+                {% if app.user.isEmployee() %}
+                    <th class="small text-muted text-uppercase"><strong>{{ 'Owner' | trans() }}</strong></th>
+                {% endif %}
+                <th class="small text-muted text-uppercase"><strong>{{ 'Amount monthly fee' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Start at' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'End at' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Created at' | trans() }}</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents %}
+                <tr>
+                    <td class="v-a-m">
+                        <a href="{{ path('document_details', {'id': document.id}) }}">{{ document.code }}</a>
+                    </td>
+                    {% if app.user.isEmployee() %}
+                        <td class="v-a-m">{{ document.owner.fullName }}</td>
+                    {% endif %}
+                    <td class="v-a-m">{{ document.amountMonthlyFee | number_format(2, '.', ',') }} <i class="fa fa-fw fa-rouble"></i></td>
+                    <td class="v-a-m">{{ document.startAt ? document.startAt | date('d.m.Y') : '-' }}</td>
+                    <td class="v-a-m">
+                        {% if document.endAt %}
+                            <span {% if (document.endAt | date('U')) < ('now' | date('U')) %}class="text-danger"{% endif %}>
+                                {{ document.endAt | date('d.m.Y') }}
+                            </span>
+                        {% else %}
+                            {{ '-' }}
+                        {% endif %}
+                    </td>
+                    <td class="v-a-m">{{ document.createdAt | date('d.m.Y') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% set vars = {
+        'route': 'documents_list',
+        'currentPage': currentPage,
+        'maxPages': maxPages,
+        'perPage': perPage,
+        'filters': filters,
+        'routeParams': {
+            'orderBy': orderBy,
+            'order': order
+        }
+    } %}
+
+    {% include 'partial/paginator.html.twig' with vars %}
+
+    {% import 'document/partial/form.html.twig' as form %}
+
+    {% set addDocumentVars = {
+        'class': 'addDocumentModal',
+        'formId': 'addDocumentForm',
+        'title': 'Add document',
+        'content': form.inputs(),
+        'formAction': path('add_document'),
+        'submitTitle': 'Add'
+    } %}
+
+    {% include 'partial/modal.html.twig' with addDocumentVars %}
+
+{% endblock %}

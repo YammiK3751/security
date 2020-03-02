@@ -1,0 +1,50 @@
+{% macro inputs() %}
+    <div class="form-group">
+        <label class="col-sm-3 control-label">{{ "Start at" | trans() }}</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control document-start-at daterange-single-date-picker" name="document[startAt]" value="" required>
+        </div>
+        <label class="col-sm-3 control-label">{{ "End at" | trans() }}</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control document-end-at daterange-single-date-picker" name="document[endAt]" value="" required>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            moment.locale('ru');
+
+            $('.edit-document').bind('click', function () {
+                var editDocumentForm = $('#editDocumentForm');
+                editDocumentForm.attr('action', $(this).data('action'));
+                editDocumentForm.find('.document-start-at').val($(this).data('startAt'));
+                editDocumentForm.find('.document-end-at').val($(this).data('endAt'));
+            });
+
+            $('.daterange-single-date-picker').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                timePicker24Hour: true,
+                timePickerIncrement: 30,
+                opens: "left",
+                drops: "down",
+                locale: {
+                    format: 'DD.MM.YYYY', applyLabel: "Выбрать", cancelLabel: "Отменить"
+                }
+            });
+
+            $('.daterange-single-date-picker').bind('apply.daterangepicker', function(){
+
+                var startDate = moment($('.document-start-at').val(), 'DD.MM.YYYY HH:mm');
+                var endDate = moment($('.document-end-at').val(), 'DD.MM.YYYY HH:mm');
+
+                if (startDate > endDate) {
+                    alert('Дата начала не может быть позже даты завершения');
+                    $('.document-start-at').val($('.document-end-at').val())
+                }
+
+                return false;
+            });
+        });
+    </script>
+{% endmacro %}

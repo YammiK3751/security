@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Registration' | trans() }}{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center align-items-center" style="height: 80vh;">
+        <div class="col-md-4 col-md-offset-4">
+            <div>
+                <div class="panel-body">
+                    <h2 class="text-center">{{ 'Registration' | trans() }}</h2>
+                    {{ form_start(registrationForm) }}
+
+                    <div class="form-group">
+                        {{ form_label(registrationForm.lastName, null, {'label_attr': {'class': 'col-sm-5 control-label'}}) }}
+                        <div class="col-sm-7">
+                            {{ form_widget(registrationForm.lastName,  {'attr': {'class': 'form-control', 'placeholder': 'Last name' | trans() }}) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(registrationForm.firstName, null, {'label_attr': {'class': 'col-sm-5 control-label'}}) }}
+                        <div class="col-sm-7">
+                            {{ form_widget(registrationForm.firstName,  {'attr': {'class': 'form-control', 'placeholder': 'First name' | trans() }}) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(registrationForm.middleName, null, {'label_attr': {'class': 'col-sm-5 control-label'}}) }}
+                        <div class="col-sm-7">
+                            {{ form_widget(registrationForm.middleName,  {'attr': {'class': 'form-control', 'placeholder': 'Middle name' | trans() }}) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(registrationForm.username, null, {'label_attr': {'class': 'col-sm-5 control-label'}}) }}
+                        <div class="col-sm-7">
+                            {{ form_widget(registrationForm.username,  {'attr': {'class': 'form-control', 'placeholder': 'Username' | trans() }}) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'col-sm-5 control-label'}}) }}
+                        <div class="col-sm-7">
+                            {{ form_widget(registrationForm.email,  {'attr': {'class': 'form-control', 'placeholder': 'Email' | trans() }}) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(registrationForm.plainPassword, null, {'label_attr': {'class': 'col-sm-5 control-label'}}) }}
+                        <div class="col-sm-7">
+                            {{ form_widget(registrationForm.plainPassword,  {'attr': {'class': 'form-control', 'placeholder': 'Plain password' | trans() }}) }}
+                        </div>
+                    </div>
+
+                        <button class="btn btn-block btn-primary">{{ 'Register' | trans() }}</button>
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

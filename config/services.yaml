@@ -1,0 +1,85 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    mailer:
+        alias: fos_user.mailer.noop
+        public: true
+
+    admin.street:
+        class: App\Admin\StreetAdmin
+        arguments: [~, App\Entity\Street, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Streets, label: Streets, on_top: true }
+        public: true
+
+    admin.region:
+        class: App\Admin\RegionAdmin
+        arguments: [~, App\Entity\Region, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Regions, label: Regions, on_top: true }
+        public: true
+
+    admin.document:
+        class: App\Admin\DocumentAdmin
+        arguments: [~, App\Entity\Document, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Documents, label: Documents, on_top: true }
+        public: true
+
+    admin.monthly_fee:
+        class: App\Admin\MonthlyFeeAdmin
+        arguments: [~, App\Entity\MonthlyFee, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: MonthlyFees, label: MonthlyFees, on_top: true }
+        public: true
+
+    admin.crew:
+        class: App\Admin\CrewAdmin
+        arguments: [~, App\Entity\Crew, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Crews, label: Crews, on_top: true }
+        public: true
+
+    admin.departure:
+        class: App\Admin\DepartureAdmin
+        arguments: [~, App\Entity\Departure, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Departures, label: Departures, on_top: true }
+        public: true
+
+    admin.payment_order:
+        class: App\Admin\PaymentOrderAdmin
+        arguments: [~, App\Entity\PaymentOrder, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: PaymentOrders, label: PaymentOrders, on_top: true }
+        public: true
+
+    App\Command\SimulateCallCommand:
+        class: App\Command\SimulateCallCommand
+        arguments: ['@doctrine']
+        tags:
+            - { name: 'console.command', command: 'security:simulate-call'}

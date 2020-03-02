@@ -1,0 +1,12 @@
+{% macro inputs() %}
+    <div class="text-center">{{ "Are you sure you want to remove the apartment from the document?" | trans() }}</div>
+
+    <script>
+        $(document).ready(function(){
+            $('.remove-document-item').bind('click', function() {
+                let removeDocumentItemForm = $('#removeDocumentItemForm');
+                removeDocumentItemForm.attr('action', $(this).data('action'));
+            });
+        });
+    </script>
+{% endmacro %}

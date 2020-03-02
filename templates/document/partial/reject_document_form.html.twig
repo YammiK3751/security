@@ -1,0 +1,12 @@
+{% macro inputs() %}
+    <div class="text-center">{{ "Are you sure you want to reject this document?" | trans() }}</div>
+
+    <script>
+        $(document).ready(function(){
+            $('.reject-document').bind('click', function() {
+                let rejectDocumentForm = $('#rejectDocumentForm');
+                rejectDocumentForm.attr('action', $(this).data('action'));
+            });
+        });
+    </script>
+{% endmacro %}

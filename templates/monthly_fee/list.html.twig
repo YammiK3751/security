@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "Contracts" | trans() }}{% endblock %}
+
+{% block body %}
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Status' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Sum' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Document' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Payment date' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Actions' | trans() }}</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pay in payments %}
+            <tr>
+                <td class="v-a-m">
+                    {% if pay.paid %}
+                        <span class="text-success">{{ 'Paid' | trans() }}</span>
+                    {% else %}
+                        <span class="text-danger">{{ 'Not paid' | trans() }}</span>
+                    {% endif %}
+                </td>
+                <td class="v-a-m">
+                    <span>{{ pay.document.amountMonthlyFee | number_format(2, '.', ',') }} <i class="fa fa-fw fa-rouble"></i></span>
+                </td>
+                <td class="v-a-m">
+                    <a href="{{ path('document_details', {'id': pay.document.id}) }}">{{ pay.document.code }}</a>
+                </td>
+                <td class="v-a-m">
+                    <span>{{ pay.paymentDate | date('d.m.Y') }}</span>
+                </td>
+                <td class="v-a-m">
+                    {% if not pay.paid %}
+                        <a href="{{ path('pay_monthly_fee', {'id': pay.id}) }}"
+                           class="btn btn-success"
+                        ><i class="fa fa-ruble"></i> {{ 'Pay' | trans() }}</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% set vars = {
+        'route': 'payment_orders_list',
+        'currentPage': currentPage,
+        'maxPages': maxPages,
+        'perPage': perPage,
+        'filters': filters,
+        'routeParams': {
+            'orderBy': orderBy,
+            'order': order
+        }
+    } %}
+
+    {% include 'partial/paginator.html.twig' with vars %}
+{% endblock %}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="icon" type="image/x-icon" href="{{ asset('shevron.svg.png') }}" />
+
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+        <!-- Enable responsiveness on mobile devices-->
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+        <!-- endbuild -->
+
+        <meta charset="UTF-8">
+
+        <title>{% block title %}Welcome!{% endblock %}</title>
+
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/plugins.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/trumbowyg.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/tokenfield.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/Chart.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/checkselect.css') }}">
+        {% endblock %}
+    </head>
+    <body class="sidebar-light-primary">
+        <script src="{{ asset('js/lib.min.js') }}"></script>
+
+        <div class="main-wrap">
+            <nav class="navigation">
+                <div class="navbar-default navbar navbar-fixed-top">
+                    <div class="container-fluid">
+
+                        <div class="navbar-header">
+                            <a class="current navbar-brand" href="/">
+                                <img alt="Spin Logo Inverted" class="h-20" src="/shevron.svg.png">
+                            </a>
+                            <a class="navbar-brand text-inverse" href="/" style="font-weight: bold; font-size: 15pt;">
+                                <span class="text-inverse">{{ 'Shield' | trans() }}</span>
+                            </a>
+
+                            <button class="navbar-toggle collapsed" data-target="#navbar" data-toggle="collapse" type="button">
+                                <i class="fa fa-fw fa-user text-inverse"></i>
+                            </button>
+                            <button class="action-sidebar-open navbar-toggle collapsed" type="button">
+                                <i class="fa fa-fw fa-bars text-inverse"></i>
+                            </button>
+                        </div>
+
+                        <div class="collapse navbar-collapse" id="navbar">
+
+                            <!-- START Search Mobile -->
+                            <div class="form-group hidden-lg hidden-md hidden-sm m-t-2">
+                                <div class="input-group hidden-lg hidden-md">
+                                    <input type="text" class="form-control" placeholder="Search for...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" type="button"><i class="fa fa-fw fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- END Search Mobile -->
+
+                            <!-- START Left Side Navbar -->
+                            <ul class="nav navbar-nav navbar-left clearfix yamm">
+
+                                <!-- START Switch Sidebar ON/OFF -->
+                                <li id="sidebar-switch" class="hidden-xs">
+                                    <a class="action-toggle-sidebar-slim" data-placement="bottom" data-toggle="tooltip" href="#" title="Slim sidebar on/off">
+                                        <i class="fa fa-lg fa-bars fa-fw"></i>
+                                    </a>
+                                </li>
+                                <!-- END Switch Sidebar ON/OFF -->
+                            </ul>
+                            <!-- START Left Side Navbar -->
+                            <!-- START Right Side Navbar -->
+                            <ul class="nav navbar-nav navbar-right">
+                                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle user-dropdown" data-toggle="dropdown" href="javascript: void(0)" role="button">
+                                            <span class="m-r-1">{{ app.user.fullName }}</span>
+                                            <div class="avatar avatar-image avatar-sm avatar-inline">
+                                                <div class="avatar-circle">
+                                                    <img alt="User" src="/images/noavatar.png">
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="{{ path('profile') }}">{{ 'Edit profile' | trans() }}</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ path('fos_user_security_logout') }}">{{ 'Log out' | trans() }}</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="{{ path('fos_user_registration_register') }}">{{ 'Register' | trans}}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('fos_user_security_login') }}">{{ 'Log in' | trans}}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                            <!-- END Right Side Navbar -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- START Sidebars -->
+                <aside class="navbar-default sidebar">
+                    <div class="sidebar-content">
+                        <!-- START Tree -->
+                        <ul class="side-menu m-t-2">
+                            <li {% if app.request.attributes.get('_route') == 'homepage' %}class="active"{% endif %}>
+                                <a href="{{ path('homepage') }}" title="{{ "Dashboard" | trans() }}">
+                                    <i class="fa fa-bar-chart fa-lg fa-fw"></i><span class="nav-label">{{ "Dashboard" | trans() }}</span>
+                                </a>
+                            </li>
+                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                                <li {% if app.request.attributes.get('_route') == 'documents_list' %}class="active"{% endif %}>
+                                    <a href="{{ path('documents_list') }}" title="{{ "Contracts" | trans() }}">
+                                        <i class="fa fa-book fa-lg fa-fw m-r-1"></i> <span class="nav-label">{{ "Contracts" | trans() }}</span>
+                                    </a>
+                                </li>
+                                <li {% if app.request.attributes.get('_route') == 'payment_orders_list' %}class="active"{% endif %}>
+                                    <a href="{{ path('payment_orders_list') }}" title="{{ "Payment orders" | trans() }}">
+                                        <i class="fa fa-dollar fa-lg fa-fw m-r-1"></i> <span class="nav-label">{{ "Payment orders" | trans() }}</span>
+                                    </a>
+                                </li>
+                                <li {% if app.request.attributes.get('_route') == 'monthly_fees_list' %}class="active"{% endif %}>
+                                    <a href="{{ path('monthly_fees_list') }}" title="{{ "Monthly fees" | trans() }}">
+                                        <i class="fa fa-clock-o fa-lg fa-fw m-r-1"></i> <span class="nav-label">{{ "Monthly fees" | trans() }}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </aside>
+            </nav>
+            {%  for message in app.session.flashBag('notice') %}
+                <div class="alert alert-success" role="alert">
+                    <button type="button" class="close text-gray-darker" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <strong>{{ 'Success' | trans() }} {{ message }}</strong>
+                </div>
+            {% endfor %}
+            <div class="content">
+                <!-- START Sub-Navbar with Header and Breadcrumbs-->
+                <div class="sub-navbar sub-navbar__header-breadcrumbs">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12 sub-navbar-column">
+                                <ol class="breadcrumb navbar-text navbar-right no-bg" style="padding: 8px 0;margin-left: 0;">
+                                    <li class="current-parent">
+                                        <a class="current-parent" href="/">
+                                            <i class="fa fa-fw fa-home"></i>
+                                        </a>
+                                    </li>
+                                    {% block breadcrumbs %}{% endblock%}
+                                    {{ wo_render_breadcrumbs() }}
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- END Sub-Navbar with Header and Breadcrumbs-->
+                {% for label, messages in app.flashes(['danger']) %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}">
+                            <button type="button" class="close text-gray-darker" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            {{ message | trans() }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <div class="container-fluid">
+                    <!-- START Content -->
+                    <div class="row">
+                        {% block body %}{% endblock %}
+                    </div>
+                    <!-- END Content -->
+                </div>
+            </div>
+            <!-- START Footer -->
+            <footer>
+                <div class="container-fluid">
+                    <p class="text-gray-dark">
+                        © 2019 - {{ 'now' | date('Y') }} ОВО Щит
+                    </p>
+                </div>
+            </footer>
+            <!-- END Footer -->
+        </div>
+        <link rel="stylesheet" href="{{ asset('css/lib.min.css') }}">
+        {% block javascripts %}
+            <script src="{{ asset('js/helpers.js') }}"></script>
+            <script src="{{ asset('js/layoutControl.js') }}"></script>
+            <script src="{{ asset('js/rightSidebar.js') }}"></script>
+            <script src="{{ asset('js/sidebar.js') }}"></script>
+            <script src="{{ asset('js/main.js') }}"></script>
+            <script src="{{ asset('js/moment-with-locales.js') }}"></script>
+            <script src="{{ asset('js/daterangepicker.min.js') }}"></script>
+            <script src="{{ asset('js/fullcalendar.min.js') }}"></script>
+            <script src="{{ asset('js/trumbowyg.min.js') }}"></script>
+            <script src="{{ asset('js/select2.min.js') }}"></script>
+            <script src="{{ asset('js/htmldiff.js') }}"></script>
+            <script src="{{ asset('js/tokenfield.js') }}"></script>
+            <script src="{{ asset('js/Chart.min.js') }}"></script>
+            <script src="{{ asset('js/ChartUtils.min.js') }}"></script>
+            <script src="{{ asset('js/checkselect.js') }}"></script>
+            <script src="{{ asset('js/jquery.inputmask.min.js') }}"></script>
+            <script src="{{ asset('js/highchart.js') }}"></script>
+            <script>
+                $(document).ready(function(){
+                    $('.filter').change(function(){
+                        $('.filter-form').submit();
+                    });
+                    moment.locale('ru');
+
+                    $('.filter-form select, .select2-modify').select2({ width: '200px' });
+                    $('.select2-modal').select2({ width: '100%' });
+
+                    $('.trumbowyg-textarea').trumbowyg({removeformatPasted: true});
+
+                    $('.alert').delay(10000).slideUp(400);
+
+                    $(':input[type=tel]').inputmask('+7 (999) 999-99-99');
+                });
+            </script>
+        {% endblock %}
+    </body>
+</html>

@@ -83,7 +83,7 @@ class Apartment
         /** @var House $house */
         $house = $this->getHouse();
 
-        $address = 'кв. ' . $this->getNumber() . ', д. ' . $house->getNumber() . ', ' . $house->getStreet()->getName() . ', ' . $house->getRegion()->getName();
+        $address = $house->getRegion()->getName() . ', ' . $house->getStreet()->getName() . ', д. ' . $house->getNumber() . ', кв. ' . $this->getNumber();
 
         return $address;
     }

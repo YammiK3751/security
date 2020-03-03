@@ -127,20 +127,23 @@ class DocumentController extends AbstractController
     }
 
     /**
-     * @Route("/documents/{id}/reject-document", name="reject_document")
+     * @Route("/documents/{id}/change-status/{status}", name="change_document_status")
      */
-    public function rejectAction(Request $request)
+    public function changeStatusAction(Request $request)
     {
         $documentId = $request->get('id');
+        $status = $request->get('status');
 
         /** @var Document $document */
         $document = $this->getDocumentRepository()->find($documentId);
+
+        $document->setStatus($status);
 
         $em = $this->getEm();
         $em->persist($document);
         $em->flush();
 
-        return $this->redirectToRoute('documents_list');
+        return $this->redirect($request->headers->get('referer'));
     }
 
     /**
@@ -269,17 +272,10 @@ class DocumentController extends AbstractController
         /** @var SecurityApartment $item */
         $item = $this->getSecurityApartmentRepository()->find($itemId);
 
-        /** @var Apartment $apartment */
-        $apartment = $item->getApartment();
-
-        /** @var House $house */
-        $house = $apartment->getHouse();
-
         $document->minusCompensation($item->getCompensation());
+
         $em->persist($document);
         $em->remove($item);
-        $em->remove($apartment);
-        $em->remove($house);
         $em->flush();
 
         return $this->redirect($request->headers->get('referer'));
@@ -288,7 +284,6 @@ class DocumentController extends AbstractController
     /**
      * @param $itemDetails
      * @return Apartment|bool
-     * @throws \Doctrine\ORM\ORMException
      */
     protected function buildApartment($itemDetails)
     {

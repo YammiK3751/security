@@ -273,10 +273,78 @@ class Document
     public function getStatusColor()
     {
         return [
-            self::DOCUMENT_STATUS_NEEDS_APPROVE => 'inverse',
+            self::DOCUMENT_STATUS_NEEDS_APPROVE => 'info',
             self::DOCUMENT_STATUS_APPROVED => 'success',
             self::DOCUMENT_STATUS_NEEDS_FIXING => 'warning',
             self::DOCUMENT_STATUS_CANCELLED => 'danger'
         ];
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function isOwner(User $user)
+    {
+        return $this->getOwner()->getId() == $user->getId();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNeedsApprove()
+    {
+        return $this->getStatus() == self::DOCUMENT_STATUS_NEEDS_APPROVE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApproved()
+    {
+        return $this->getStatus() == self::DOCUMENT_STATUS_APPROVED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNeedsFixing()
+    {
+        return $this->getStatus() == self::DOCUMENT_STATUS_NEEDS_FIXING;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCancelled()
+    {
+        return $this->getStatus() == self::DOCUMENT_STATUS_CANCELLED;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function canEditDocument(User $user)
+    {
+        return $this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing());
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function canApprove(User $user)
+    {
+        return !$user->isUser() and !$this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing());
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function canReturnFixing(User $user)
+    {
+        return !$user->isUser() and !$this->isOwner($user) and $this->isApproved();
     }
 }

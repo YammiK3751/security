@@ -2,6 +2,10 @@
 
 {% block title %}{{ "Contracts" | trans() }}{% endblock %}
 
+{#{% block breadcrumbs %}#}
+{#    {{ wo_render_breadcrumbs({ viewTemplate: 'Contract' | trans() ~ ':' ~ path('documents_list')}) }}#}
+{#{% endblock %}#}
+
 {% block body %}
     <form class="form-inline filter-form" method="get" action="{{ path('documents_list') }}">
         <div class="panel panel-default no-bg  b-gray-dark">
@@ -15,12 +19,13 @@
         <thead>
             <tr>
                 <th class="small text-muted text-uppercase"><strong>{{ 'Code' | trans() }}</strong></th>
-                {% if app.user.isEmployee() %}
+                {% if not app.user.isUser() %}
                     <th class="small text-muted text-uppercase"><strong>{{ 'Owner' | trans() }}</strong></th>
                 {% endif %}
                 <th class="small text-muted text-uppercase"><strong>{{ 'Amount monthly fee' | trans() }}</strong></th>
                 <th class="small text-muted text-uppercase"><strong>{{ 'Start at' | trans() }}</strong></th>
                 <th class="small text-muted text-uppercase"><strong>{{ 'End at' | trans() }}</strong></th>
+                <th class="small text-muted text-uppercase"><strong>{{ 'Status' | trans() }}</strong></th>
                 <th class="small text-muted text-uppercase"><strong>{{ 'Created at' | trans() }}</strong></th>
             </tr>
         </thead>
@@ -30,19 +35,16 @@
                     <td class="v-a-m">
                         <a href="{{ path('document_details', {'id': document.id}) }}">{{ document.code }}</a>
                     </td>
-                    {% if app.user.isEmployee() %}
+                    {% if not app.user.isUser() %}
                         <td class="v-a-m">{{ document.owner.fullName }}</td>
                     {% endif %}
                     <td class="v-a-m">{{ document.amountMonthlyFee | number_format(2, '.', ',') }} <i class="fa fa-fw fa-rouble"></i></td>
                     <td class="v-a-m">{{ document.startAt ? document.startAt | date('d.m.Y') : '-' }}</td>
+                    <td class="v-a-m">{{ document.endAt ? document.endAt | date('d.m.Y') : '-' }}</td>
                     <td class="v-a-m">
-                        {% if document.endAt %}
-                            <span {% if (document.endAt | date('U')) < ('now' | date('U')) %}class="text-danger"{% endif %}>
-                                {{ document.endAt | date('d.m.Y') }}
-                            </span>
-                        {% else %}
-                            {{ '-' }}
-                        {% endif %}
+                        <span class="text-{{ document.statusColor[document.status] }}">
+                            {{ document.statusList[document.status] | trans() }}
+                        </span>
                     </td>
                     <td class="v-a-m">{{ document.createdAt | date('d.m.Y') }}</td>
                 </tr>

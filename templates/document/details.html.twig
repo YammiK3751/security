@@ -3,7 +3,7 @@
 {% block title %}{{ document.code }}{% endblock %}
 
 {#{% block breadcrumbs %}#}
-{#    {{ breadcrumb( 'Contracts' | trans(), path('documents_list') ) }}#}
+{#    {{ breadcrumb( 'Contract' | trans(), path('documents_list') ) }}#}
 {#    {{ breadcrumb( document.code, path('document_details', {'id': document.id}) ) }}#}
 {#{% endblock %}#}
 
@@ -25,6 +25,18 @@
                 </td>
                 <td class="v-a-m text-right">
                     <span>{{ document.owner.fullName }}</span>
+                </td>
+            </tr>
+            <!-- END ROW Project Details  -->
+            <!-- START ROW Project Details  -->
+            <tr>
+                <td class="v-a-m">
+                    {{ 'Status' | trans() }}
+                </td>
+                <td class="v-a-m text-right">
+                    <span class="text-{{ document.statusColor[document.status] }}">
+                        {{ document.statusList[document.status] | trans() }}
+                    </span>
                 </td>
             </tr>
             <!-- END ROW Project Details  -->
@@ -88,21 +100,35 @@
                             <i class="fa fa-fw fa-gear"></i> {{ "Actions" | trans() }} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
-                            <li>
-                                <a href=""
-                                   class="edit-document"
-                                   data-action="{{ path('edit_document', {'id': document.id}) }}"
-                                   data-start-at="{{ document.startAt | date('d.m.Y') }}"
-                                   data-end-at="{{ document.endAt | date('d.m.Y') }}"
-                                   data-target=".editDocumentModal"
-                                   data-toggle="modal"
-                                   title="{{ 'Edit' | trans() }}"
-                                ><i class="fa fa-fw fa-pencil m-r-1"></i>{{ 'Edit' | trans() }}</a>
-                            </li>
+                            {% if document.canEditDocument(app.user) %}
+                                <li>
+                                    <a href=""
+                                       class="edit-document"
+                                       data-action="{{ path('edit_document', {'id': document.id}) }}"
+                                       data-start-at="{{ document.startAt | date('d.m.Y') }}"
+                                       data-end-at="{{ document.endAt | date('d.m.Y') }}"
+                                       data-target=".editDocumentModal"
+                                       data-toggle="modal"
+                                       title="{{ 'Edit' | trans() }}"
+                                    ><i class="fa fa-fw fa-pencil m-r-1"></i>{{ 'Edit' | trans() }}</a>
+                                </li>
+                            {% endif %}
+                            {% if document.canApprove(app.user) %}
+                                <li>
+                                    <a href="{{ path('change_document_status', {'id': document.id, 'status': 2}) }}"
+                                    ><i class="fa fa-fw fa-thumbs-o-up text-success m-r-1"></i>{{ 'Approve' | trans() }}</a>
+                                </li>
+                            {% endif %}
+                            {% if document.canReturnFixing(app.user) %}
+                                <li>
+                                    <a href="{{ path('change_document_status', {'id': document.id, 'status': 3}) }}"
+                                    ><i class="fa fa-fw fa-fast-backward text-warning m-r-1"></i>{{ 'Return fixing' | trans() }}</a>
+                                </li>
+                            {% endif %}
                             <li>
                                 <a href=""
                                    class="reject-document"
-                                   data-action="{{ path('reject_document', {'id': document.id}) }}"
+                                   data-action="{{ path('change_document_status', {'id': document.id, 'status': 4}) }}"
                                    data-target=".rejectDocumentModal"
                                    data-toggle="modal"
                                    title="{{ 'Reject' | trans() }}"
@@ -117,10 +143,12 @@
                        target="_blank"
                     ><i class="fa fa-fw fa-file-word-o text-inverse"></i>{{ 'Export' | trans() }}</a>
 
-                    <a class="btn btn-primary"
-                       data-target=".addDocumentItemModal"
-                       data-toggle="modal"
-                    ><i class="fa fa-plus"></i> {{ 'Add apartment' | trans() }}</a>
+                    {% if document.canEditDocument(app.user) %}
+                        <a class="btn btn-primary"
+                           data-target=".addDocumentItemModal"
+                           data-toggle="modal"
+                        ><i class="fa fa-plus"></i> {{ 'Add apartment' | trans() }}</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -136,9 +164,11 @@
                         <th class="small text-muted text-uppercase">
                             <strong>{{ "Amount compensation" | trans() }}</strong>
                         </th>
+                        {% if document.canEditDocument(app.user) %}
                         <th style="width: 125px;" class="small text-muted text-uppercase">
                             <strong>{{ "Actions" | trans() }}</strong>
                         </th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -149,36 +179,38 @@
                             <td class="v-a-m">#{{ loop.index }}</td>
                             <td class="v-a-m">{{ item.apartment.address }}</td>
                             <td class="v-a-m">{{ item.compensation | number_format(2, '.', ',') }} <i class="fa fa-fw fa-rouble"></i></td>
-                            <td class="v-a-m">
-                                <div class="dropdown">
-                                    <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <i class="fa fa-fw fa-gear"></i> <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-right">
-                                        <li>
-                                            <a href=""
-                                               class="edit-document-item"
-                                               data-action="{{ path('edit_document_item', {'id': document.id, 'itemId': item.id}) }}"
-                                               data-compensation="{{ item.compensation }}"
-                                               data-number-apartment="{{ item.apartment.number }}"
-                                               data-number-house="{{ item.apartment.house.number }}"
-                                               data-street="{{ item.apartment.house.street.id }}"
-                                               data-region="{{ item.apartment.house.region.id }}"
-                                               data-target=".editDocumentItemModal"
-                                               data-toggle="modal"
-                                               title="{{ 'Edit apartment' | trans() }}"><i class="fa fa-fw fa-pencil m-r-1"></i>{{ 'Edit apartment' | trans() }}</a>
-                                        </li>
-                                        <li>
-                                            <a href=""
-                                               class="remove-document-item"
-                                               data-action="{{ path('remove_document_item', {'id': document.id, 'itemId': item.id}) }}"
-                                               data-target=".removeDocumentItemModal"
-                                               data-toggle="modal"
-                                               title="{{ 'Remove apartment' | trans() }}"><i class="fa fa-fw fa-close text-danger m-r-1"></i>{{ 'Remove apartment' | trans() }}</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
+                            {% if document.canEditDocument(app.user) %}
+                                <td class="v-a-m">
+                                    <div class="dropdown">
+                                        <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <i class="fa fa-fw fa-gear"></i> <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                            <li>
+                                                <a href=""
+                                                   class="edit-document-item"
+                                                   data-action="{{ path('edit_document_item', {'id': document.id, 'itemId': item.id}) }}"
+                                                   data-compensation="{{ item.compensation }}"
+                                                   data-number-apartment="{{ item.apartment.number }}"
+                                                   data-number-house="{{ item.apartment.house.number }}"
+                                                   data-street="{{ item.apartment.house.street.id }}"
+                                                   data-region="{{ item.apartment.house.region.id }}"
+                                                   data-target=".editDocumentItemModal"
+                                                   data-toggle="modal"
+                                                   title="{{ 'Edit apartment' | trans() }}"><i class="fa fa-fw fa-pencil m-r-1"></i>{{ 'Edit apartment' | trans() }}</a>
+                                            </li>
+                                            <li>
+                                                <a href=""
+                                                   class="remove-document-item"
+                                                   data-action="{{ path('remove_document_item', {'id': document.id, 'itemId': item.id}) }}"
+                                                   data-target=".removeDocumentItemModal"
+                                                   data-toggle="modal"
+                                                   title="{{ 'Remove apartment' | trans() }}"><i class="fa fa-fw fa-close text-danger m-r-1"></i>{{ 'Remove apartment' | trans() }}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     <tr class="border-top-white">

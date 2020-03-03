@@ -1,23 +1,23 @@
 {% macro inputs(regions, streets) %}
     <div class="form-group">
-        <label class="col-sm-3 m-l-2 control-label">{{ "Compensation" | trans() }}</label>
-        <div class="col-sm-7">
+        <label class="col-sm-2 control-label">{{ "Compensation" | trans() }}</label>
+        <div class="col-sm-9">
             <input type="text" pattern="\d+(\.\d{0,10})?" class="form-control item-compensation" placeholder="{{ "Compensation" | trans() }}" value="" name="item[compensation]" required>
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2 control-label">{{ "Number apartment" | trans() }}</label>
-        <div class="col-sm-3">
+        <label class="col-sm-2 control-label" style="margin-top: -10px;">{{ "Number apartment" | trans() }}</label>
+        <div class="col-sm-4">
             <input type="number" class="form-control item-number-apartment" placeholder="{{ "Number apartment" | trans() }}" name="item[numberApartment]" value="" required>
         </div>
-        <label class="col-sm-3 control-label">{{ "Number house" | trans() }}</label>
-        <div class="col-sm-3">
+        <label class="col-sm-1 control-label" style="margin-top: -10px;">{{ "Number house" | trans() }}</label>
+        <div class="col-sm-4">
             <input type="number" class="form-control item-number-house" placeholder="{{ "Number house" | trans() }}" name="item[numberHouse]" value="" required>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-2 control-label">{{ "Street" | trans() }}</label>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <select class="form-control select2-modal item-street" name="item[street]" required>
                 <option value="">{{ 'Select street' | trans() }}</option>
                 {% for street in streets %}
@@ -25,8 +25,8 @@
                 {% endfor %}
             </select>
         </div>
-        <label class="col-sm-3 control-label">{{ "Region" | trans() }}</label>
-        <div class="col-sm-3">
+        <label class="col-sm-1 control-label">{{ "Region" | trans() }}</label>
+        <div class="col-sm-4">
             <select class="form-control select2-modal item-region" name="item[region]" required>
                 <option value="">{{ 'Select region' | trans() }}</option>
                 {% for region in regions %}

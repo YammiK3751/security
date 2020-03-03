@@ -102,3 +102,11 @@ Departure date: Дата выезда
 
 Active Employee: Сотрудник
 Inactive Employee: Бывший сотрудник
+
+document.needs_fixing: На исправлении
+document.needs_approve: На согласовании
+document.approved: Согласован
+document.cancelled: Отменен
+
+Return fixing: Вернуть на исправление
+Approve: Одобрить

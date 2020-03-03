@@ -17,6 +17,7 @@ class User extends BaseUser
 {
     const EMPLOYEE_STATUS_ACTIVE = 'active';
     const EMPLOYEE_STATUS_INACTIVE = 'inactive';
+    const EMPLOYEE_STATUS_USER = 'user';
 
     /**
      * @ORM\Id
@@ -62,13 +63,11 @@ class User extends BaseUser
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\SecurityApartment", mappedBy="user", orphanRemoval=true)
-     * @ORM\Column(type="string")
      */
     private $securityApartments;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Document", mappedBy="owner", orphanRemoval=true)
-     * @ORM\Column(type="string")
      */
     private $documents;
 
@@ -77,7 +76,7 @@ class User extends BaseUser
         parent::__construct();
         $this->securityApartments = new ArrayCollection();
         $this->documents = new ArrayCollection();
-        // your own logic
+        $this->roles = ['ROLE_USER'];
     }
 
     /**
@@ -236,6 +235,7 @@ class User extends BaseUser
     public static function getEmployeeStates()
     {
         return [
+            self::EMPLOYEE_STATUS_USER => 'Клиент',
             self::EMPLOYEE_STATUS_ACTIVE => 'Active Employee',
             self::EMPLOYEE_STATUS_INACTIVE => 'Inactive Employee',
         ];

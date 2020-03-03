@@ -2,12 +2,14 @@
 
 namespace App\Repository;
 
+use App\Entity\Document;
 use App\Entity\MonthlyFee;
 use App\Entity\User;
 use App\Traits\RepositoryPaginatorTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @method MonthlyFee|null find($id, $lockMode = null, $lockVersion = null)
@@ -37,9 +39,19 @@ class MonthlyFeeRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('mf');
 
-        if (!$user->hasRole('ROLE_SUPER_ADMIN')) {
+        if ($user->isUser()) {
             $filters['user'] = $user->getId();
+            $filters['currentDate'] = date('Y-m-d');
         }
+
+        $qb
+            ->select('mf')
+            ->leftJoin('mf.document', 'mfd')
+            ->andWhere(
+                $qb->expr()->neq('mfd.status', ':status')
+            )
+            ->setParameter('status', Document::DOCUMENT_STATUS_CANCELLED)
+        ;
 
         $qb = $this->applyFilters($qb, $filters);
 
@@ -54,41 +66,20 @@ class MonthlyFeeRepository extends ServiceEntityRepository
     {
         if (!empty($filters['user'])) {
             $qb
-                ->leftJoin('mf.document', 'mfd')
-                ->where($qb->expr()->eq('mfd.owner', ':user'))
+                ->andWhere(
+                    $qb->expr()->eq('mfd.owner', ':user')
+                )
                 ->setParameter('user', $filters['user'])
+            ;
+        }
+
+        if (!empty($filters['currentDate'])) {
+            $qb
+                ->andWhere('mf.paymentDate <= :currentDate')
+                ->setParameter('currentDate', $filters['currentDate'])
             ;
         }
 
         return $qb;
     }
-
-    // /**
-    //  * @return MonthlyFee[] Returns an array of MonthlyFee objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?MonthlyFee
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

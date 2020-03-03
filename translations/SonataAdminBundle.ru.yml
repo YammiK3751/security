@@ -98,3 +98,18 @@ Paid: Оплачено
 Not paid: Не оплачено
 Status: Статус
 Pay: Оплатить
+Departure date: Дата выезда
+
+Active Employee: Сотрудник
+Inactive Employee: Бывший сотрудник
+
+document.needs_fixing: На исправлении
+document.needs_approve: На согласовании
+document.approved: Согласован
+document.cancelled: Отменен
+
+Return fixing: Вернуть на исправление
+Approve: Одобрить
+middlename: Отчество
+Employment date: Дата принятия на работоу
+Employee Status : Статус сотрудника

@@ -85,7 +85,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse('http://security.test/');
+        return new RedirectResponse('http://security/');
     }
 
     protected function getLoginUrl()

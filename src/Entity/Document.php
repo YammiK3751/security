@@ -327,7 +327,7 @@ class Document
      */
     public function canEditDocument(User $user)
     {
-        return $this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing());
+        return ($this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing())) or $user->isSuperAdmin();
     }
 
     /**
@@ -336,7 +336,7 @@ class Document
      */
     public function canApprove(User $user)
     {
-        return !$user->isUser() and !$this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing());
+        return (!$user->isUser() and !$this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing())) or $user->isSuperAdmin();
     }
 
     /**
@@ -345,6 +345,6 @@ class Document
      */
     public function canReturnFixing(User $user)
     {
-        return !$user->isUser() and !$this->isOwner($user) and $this->isApproved();
+        return (!$user->isUser() and !$this->isOwner($user) and $this->isApproved()) or $user->isSuperAdmin();
     }
 }

@@ -34,7 +34,7 @@ class MonthlyFee
      *
      * @ORM\Column(type="boolean")
      */
-    private $paid;
+    private $paid = false;
 
     /**
      * @return int

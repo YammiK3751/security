@@ -33,10 +33,6 @@ class UserAdmin extends SonataUserAdmin
                         'required' => false,
                         'label' => 'middlename'
                     ])
-                    ->add('employmentDate', DateType::class, [
-                        'required' => false,
-                        'label' => 'Employment date'
-                    ])
                     ->add('employeeStatus', ChoiceType::class, [
                         'label' => 'Employee Status',
                         'choices' => User::getEmployeeStatusChoices()

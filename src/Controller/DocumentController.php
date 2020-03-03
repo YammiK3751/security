@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Apartment;
 use App\Entity\Document;
 use App\Entity\House;
+use App\Entity\MonthlyFee;
 use App\Entity\Region;
 use App\Entity\SecurityApartment;
 use App\Entity\Street;
@@ -133,13 +134,28 @@ class DocumentController extends AbstractController
     {
         $documentId = $request->get('id');
         $status = $request->get('status');
+        $em = $this->getEm();
 
         /** @var Document $document */
         $document = $this->getDocumentRepository()->find($documentId);
 
         $document->setStatus($status);
 
-        $em = $this->getEm();
+        if ($status == Document::DOCUMENT_STATUS_APPROVED) {
+            $period = new \DatePeriod($document->getStartAt(), new \DateInterval('P1M'), $document->getEndAt());
+
+            /** @var \DateTime $date */
+            foreach ($period as $date) {
+                $monthlyFee = new MonthlyFee();
+                $monthlyFee
+                    ->setDocument($document)
+                    ->setPaymentDate($date)
+                    ->setPaid(false)
+                ;
+                $em->persist($monthlyFee);
+            }
+        }
+
         $em->persist($document);
         $em->flush();
 
@@ -187,9 +203,6 @@ class DocumentController extends AbstractController
         $documentId = $request->get('id');
         $itemDetails = $request->get('item');
         $em = $this->getEm();
-
-        /** @var User $user */
-        $user = $this->getUser();
 
         /** @var Document $document */
         $document = $this->getDocumentRepository()->find($documentId);

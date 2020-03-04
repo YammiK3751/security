@@ -26,13 +26,14 @@ class PaymentOrderController extends AbstractController
         $currentPage = $request->get('page', 1);
         $orderBy = $request->get('orderBy');
         $order = $request->get('order');
+        $perPage = $request->get('perPage', self::PER_PAGE);
         /** @var User $user */
         $user = $this->getUser();
 
-        $paymentOrders = $this->getPaymentOrderRepository()->getAvailablePaymentOrders($filters, $user, $orderBy, $order, $currentPage, self::PER_PAGE);
+        $paymentOrders = $this->getPaymentOrderRepository()->getAvailablePaymentOrders($filters, $user, $orderBy, $order, $currentPage, $perPage);
 
         $maxRows = $paymentOrders->count();
-        $maxPages = ceil($maxRows / self::PER_PAGE);
+        $maxPages = ceil($maxRows / $perPage);
 
         return $this->render('payment_order/list.html.twig', [
             'paymentOrders' => $paymentOrders,
@@ -40,7 +41,7 @@ class PaymentOrderController extends AbstractController
             'orderBy' => $orderBy,
             'order' => $order,
             'filters' => $filters,
-            'perPage' => self::PER_PAGE,
+            'perPage' => $perPage,
             'maxRows' => $maxRows,
             'maxPages' => $maxPages
         ]);

@@ -41,6 +41,11 @@ class PaymentOrderRepository extends ServiceEntityRepository
             $filters['user'] = $user->getId();
         }
 
+        $qb
+            ->select('po')
+            ->leftJoin('po.document', 'pod')
+        ;
+
         $qb = $this->applyFilters($qb, $filters);
 
         $qb->orderBy('po.id', 'DESC');
@@ -54,9 +59,36 @@ class PaymentOrderRepository extends ServiceEntityRepository
     {
         if (!empty($filters['user'])) {
             $qb
-                ->leftJoin('po.document', 'pod')
                 ->where($qb->expr()->eq('pod.owner', ':user'))
                 ->setParameter('user', $filters['user'])
+            ;
+        }
+
+        if (!empty($filters['document'])) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->like('pod.code', ':document')
+                )
+                ->setParameter('document', '%' . $filters['document'] . '%')
+            ;
+        }
+
+        if (!empty($filters['address'])) {
+            $qb
+                ->leftJoin('po.departure', 'dep')
+                ->leftJoin('dep.apartment', 'ap')
+                ->leftJoin('ap.house', 'h')
+                ->leftJoin('h.street', 'st')
+                ->leftJoin('h.region', 'reg')
+                ->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->like('ap.number', ':address'),
+                        $qb->expr()->like('h.number', ':address'),
+                        $qb->expr()->like('st.name', ':address'),
+                        $qb->expr()->like('reg.name', ':address')
+                    )
+                )
+                ->setParameter('address', '%' . $filters['address'] . '%')
             ;
         }
 

@@ -85,7 +85,7 @@ class MonthlyFee
     /**
      * @return bool
      */
-    public function getPaid()
+    public function isPaid()
     {
         return $this->paid;
     }
@@ -99,5 +99,10 @@ class MonthlyFee
         $this->paid = $paid;
 
         return $this;
+    }
+
+    public function canPaid(User $user)
+    {
+        return !$this->isPaid() and ($this->getDocument()->isOwner($user) or $user->isSuperAdmin());
     }
 }

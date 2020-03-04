@@ -49,7 +49,7 @@ class SimulateCallCommand extends Command
         $helper = $this->getHelper('question');
 
         $crews = $em->getRepository(Crew::class)->findAll();
-        $apartments = $em->getRepository(Apartment::class)->findAll();
+        $apartments = $em->getRepository(SecurityApartment::class)->getAvailableApartments();
         if (empty($crews) or empty($apartments)) {
             $output->writeln(['=========================================================', '']);
 
@@ -57,7 +57,7 @@ class SimulateCallCommand extends Command
                 $output->writeln(['Не найдено ни одного экипажа!', '']);
             }
 
-            if (empty($crews)) {
+            if (empty($apartments)) {
                 $output->writeln(['Не найдено ни одной квартиры!', '']);
             }
 

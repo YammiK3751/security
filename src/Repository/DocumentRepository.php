@@ -58,12 +58,26 @@ class DocumentRepository extends ServiceEntityRepository
         return $paginator;
     }
 
+    /**
+     * @param QueryBuilder $qb
+     * @param $filters
+     * @return QueryBuilder
+     */
     protected function applyFilters(QueryBuilder $qb, $filters)
     {
         if (!empty($filters['user'])) {
             $qb
-                ->where($qb->expr()->eq('d.owner', ':user'))
+                ->andWhere($qb->expr()->eq('d.owner', ':user'))
                 ->setParameter('user', $filters['user'])
+            ;
+        }
+
+        if (!empty($filters['document'])) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->like('d.code', ':document')
+                )
+                ->setParameter('document', '%' . $filters['document'] . '%')
             ;
         }
 

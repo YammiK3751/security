@@ -12,6 +12,7 @@ use App\Entity\PaymentOrder;
 use App\Entity\Region;
 use App\Entity\SecurityApartment;
 use App\Entity\Street;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
 Trait RepositoryAwareTrait
@@ -107,5 +108,13 @@ Trait RepositoryAwareTrait
     protected function getCrewRepository()
     {
         return $this->getDoctrine()->getRepository(Crew::class);
+    }
+
+    /**
+     * @return UserRepository
+     */
+    protected function getUserRepository()
+    {
+        return $this->getDoctrine()->getRepository(User::class);
     }
 }

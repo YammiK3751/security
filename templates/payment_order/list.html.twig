@@ -1,9 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ "Contracts" | trans() }}{% endblock %}
+{% block title %}{{ "Payment orders" | trans() }}{% endblock %}
 
 {% block body %}
-
+    <form class="form-inline filter-form" method="get" action="{{ path('payment_orders_list') }}">
+        <div class="panel panel-default no-bg  b-gray-dark">
+            <div class="panel-body">
+                <div class="form-group">
+                    <input class="form-control filter" name="filters[address]" placeholder="{{ 'Search by address' | trans() }}"
+                           value="{% if filters.address is defined %}{{ filters.address }}{% endif %}">
+                </div>
+                <div class="form-group">
+                    <input class="form-control filter" name="filters[document]" placeholder="{{ 'Search by code document' | trans() }}"
+                           value="{% if filters.document is defined %}{{ filters.document }}{% endif %}">
+                </div>
+                <div class="form-group pull-right">
+                    <select class="form-control filter" id="perPage" name="perPage">
+                        <option value="25" {{ perPage == 25 ? 'selected' }}>25</option>
+                        <option value="50" {{ perPage == 50 ? 'selected' }}>50</option>
+                        <option value="100" {{ perPage == 100 ? 'selected' }}>100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -48,4 +68,12 @@
     } %}
 
     {% include 'partial/paginator.html.twig' with vars %}
+
+    <script>
+        $(document).ready(function () {
+            jQuery(function(){
+                $('#perPage').select2({ width: '55px' });
+            });
+        });
+    </script>
 {% endblock %}

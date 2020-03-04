@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Document;
 use App\Entity\MonthlyFee;
 use App\Entity\User;
 use App\Repository\RepositoryAwareTrait;
@@ -27,13 +28,15 @@ class MonthlyFeeController extends AbstractController
         $currentPage = $request->get('page', 1);
         $orderBy = $request->get('orderBy');
         $order = $request->get('order');
+        $perPage = $request->get('perPage', self::PER_PAGE);
         /** @var User $user */
         $user = $this->getUser();
 
-        $payments = $this->getMonthlyFeeRepository()->getAvailablePayments($filters, $user, $orderBy, $order, $currentPage, self::PER_PAGE);
+        $payments = $this->getMonthlyFeeRepository()->getAvailablePayments($filters, $user, $orderBy, $order, $currentPage, $perPage);
+        $users = $this->getUserRepository()->findBy(['employeeStatus' => User::EMPLOYEE_STATUS_ACTIVE]);
 
         $maxRows = $payments->count();
-        $maxPages = ceil($maxRows / self::PER_PAGE);
+        $maxPages = ceil($maxRows / $perPage);
 
         return $this->render('monthly_fee/list.html.twig', [
             'payments' => $payments,
@@ -41,9 +44,10 @@ class MonthlyFeeController extends AbstractController
             'orderBy' => $orderBy,
             'order' => $order,
             'filters' => $filters,
-            'perPage' => self::PER_PAGE,
+            'perPage' => $perPage,
             'maxRows' => $maxRows,
-            'maxPages' => $maxPages
+            'maxPages' => $maxPages,
+            'users' => $users
         ]);
     }
 
@@ -53,16 +57,21 @@ class MonthlyFeeController extends AbstractController
     public function payAction(Request $request)
     {
         $payId = $request->get('id');
+        $em = $this->getEm();
 
         /** @var MonthlyFee $monthlyFee */
         $monthlyFee = $this->getMonthlyFeeRepository()->find($payId);
-
         $monthlyFee->setPaid(true);
 
-        $em = $this->getEm();
         $em->persist($monthlyFee);
         $em->flush();
 
+        $document = $monthlyFee->getDocument();
+        if (empty($this->getMonthlyFeeRepository()->findBy(['document' => $document->getId(), 'paid' => false]))) {
+            $document->setStatus(Document::DOCUMENT_STATUS_CLOSE);
+            $em->persist($document);
+            $em->flush();
+        }
         return $this->redirect($request->headers->get('referer'));
     }
 }

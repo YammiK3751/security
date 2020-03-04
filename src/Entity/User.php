@@ -76,7 +76,7 @@ class User extends BaseUser
         parent::__construct();
         $this->securityApartments = new ArrayCollection();
         $this->documents = new ArrayCollection();
-        $this->roles = ['ROLE_USER'];
+        $this->roles = ['ROLE_CLIENT'];
     }
 
     /**
@@ -254,13 +254,7 @@ class User extends BaseUser
      */
     public function isUser()
     {
-        foreach ($this->getGroups() as $group) {
-            if ($group->hasRole('ROLE_USER')) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->hasRole('ROLE_CLIENT');
     }
 
     /**
@@ -268,12 +262,6 @@ class User extends BaseUser
      */
     public function isEmployee()
     {
-        foreach ($this->getGroups() as $group) {
-            if ($group->hasRole('ROLE_EMPLOYEE')) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->hasRole('ROLE_EMPLOYEE');
     }
 }

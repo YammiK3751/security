@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Apartment;
+use App\Entity\Document;
 use App\Entity\SecurityApartment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -19,32 +21,23 @@ class SecurityApartmentRepository extends ServiceEntityRepository
         parent::__construct($registry, SecurityApartment::class);
     }
 
-    // /**
-    //  * @return SecurityApartment[] Returns an array of SecurityApartment objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return mixed
+     */
+    public function getAvailableApartments()
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('sa');
 
-    /*
-    public function findOneBySomeField($value): ?SecurityApartment
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
+        $qb
+            ->select('ap')
+            ->from('App:Apartment', 'ap')
+            ->leftJoin('sa.document', 'd')
+            ->where(
+                $qb->expr()->eq('d.status', ':status')
+            )
+            ->setParameter('status', Document::DOCUMENT_STATUS_APPROVED)
         ;
+
+        return $qb->getQuery()->getResult();
     }
-    */
 }

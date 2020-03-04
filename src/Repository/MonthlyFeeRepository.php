@@ -80,6 +80,15 @@ class MonthlyFeeRepository extends ServiceEntityRepository
             ;
         }
 
+        if (!empty($filters['document'])) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->like('mfd.code', ':document')
+                )
+                ->setParameter('document', '%' . $filters['document'] . '%')
+            ;
+        }
+
         return $qb;
     }
 }

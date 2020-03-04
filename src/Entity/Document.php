@@ -10,10 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Document
 {
-    const DOCUMENT_STATUS_NEEDS_APPROVE = 1;
-    const DOCUMENT_STATUS_APPROVED = 2;
-    const DOCUMENT_STATUS_NEEDS_FIXING = 3;
-    const DOCUMENT_STATUS_CANCELLED = 4;
+    const DOCUMENT_STATUS_NEW = 1;
+    const DOCUMENT_STATUS_NEEDS_APPROVE = 2;
+    const DOCUMENT_STATUS_APPROVED = 3;
+    const DOCUMENT_STATUS_NEEDS_FIXING = 4;
+    const DOCUMENT_STATUS_CANCELLED = 5;
+    const DOCUMENT_STATUS_CLOSE = 6;
 
     /**
      * @ORM\Id()
@@ -68,7 +70,7 @@ class Document
      *
      * @ORM\Column(type="string", length=255)
      */
-    private $status;
+    private $status = self::DOCUMENT_STATUS_NEW;
 
     /**
      * @var ArrayCollection
@@ -80,7 +82,6 @@ class Document
     public function __construct()
     {
         $this->securityApartments = new ArrayCollection();
-        $this->status = self::DOCUMENT_STATUS_NEEDS_APPROVE;
     }
 
     /**
@@ -260,10 +261,12 @@ class Document
     public static function getStatusList()
     {
         return [
+            self::DOCUMENT_STATUS_NEW => 'document.new',
             self::DOCUMENT_STATUS_NEEDS_APPROVE => 'document.needs_approve',
             self::DOCUMENT_STATUS_APPROVED => 'document.approved',
             self::DOCUMENT_STATUS_NEEDS_FIXING => 'document.needs_fixing',
             self::DOCUMENT_STATUS_CANCELLED => 'document.cancelled',
+            self::DOCUMENT_STATUS_CLOSE => 'document.close'
         ];
     }
 
@@ -273,10 +276,12 @@ class Document
     public function getStatusColor()
     {
         return [
-            self::DOCUMENT_STATUS_NEEDS_APPROVE => 'info',
+            self::DOCUMENT_STATUS_NEW => 'info',
+            self::DOCUMENT_STATUS_NEEDS_APPROVE => 'primary',
             self::DOCUMENT_STATUS_APPROVED => 'success',
             self::DOCUMENT_STATUS_NEEDS_FIXING => 'warning',
-            self::DOCUMENT_STATUS_CANCELLED => 'danger'
+            self::DOCUMENT_STATUS_CANCELLED => 'danger',
+            self::DOCUMENT_STATUS_CLOSE => 'success'
         ];
     }
 
@@ -287,6 +292,14 @@ class Document
     public function isOwner(User $user)
     {
         return $this->getOwner()->getId() == $user->getId();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNew()
+    {
+        return $this->getStatus() == self::DOCUMENT_STATUS_NEW;
     }
 
     /**
@@ -327,7 +340,7 @@ class Document
      */
     public function canEditDocument(User $user)
     {
-        return ($this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing())) or $user->isSuperAdmin();
+        return ($this->isOwner($user) or $user->isSuperAdmin()) and ($this->isNew() or $this->isNeedsFixing());
     }
 
     /**
@@ -336,7 +349,7 @@ class Document
      */
     public function canApprove(User $user)
     {
-        return (!$user->isUser() and !$this->isOwner($user) and ($this->isNeedsApprove() or $this->isNeedsFixing())) or $user->isSuperAdmin();
+        return ((!$user->isUser() and !$this->isOwner($user)) or $user->isSuperAdmin()) and $this->isNeedsApprove();
     }
 
     /**
@@ -345,6 +358,6 @@ class Document
      */
     public function canReturnFixing(User $user)
     {
-        return (!$user->isUser() and !$this->isOwner($user) and $this->isApproved()) or $user->isSuperAdmin();
+        return ((!$user->isUser() and !$this->isOwner($user)) or $user->isSuperAdmin()) and $this->isNeedsApprove();
     }
 }

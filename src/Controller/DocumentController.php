@@ -34,13 +34,15 @@ class DocumentController extends AbstractController
         $currentPage = $request->get('page', 1);
         $orderBy = $request->get('orderBy');
         $order = $request->get('order');
+        $perPage = $request->get('perPage', self::PER_PAGE);
         /** @var User $user */
         $user = $this->getUser();
 
-        $documents = $this->getDocumentRepository()->getAvailableDocuments($filters, $user, $orderBy, $order, $currentPage, self::PER_PAGE);
+        $documents = $this->getDocumentRepository()->getAvailableDocuments($filters, $user, $orderBy, $order, $currentPage, $perPage);
+        $users = $this->getUserRepository()->findBy(['employeeStatus' => User::EMPLOYEE_STATUS_ACTIVE]);
 
         $maxRows = $documents->count();
-        $maxPages = ceil($maxRows / self::PER_PAGE);
+        $maxPages = ceil($maxRows / $perPage);
 
         return $this->render('document/list.html.twig', [
             'documents' => $documents,
@@ -48,9 +50,10 @@ class DocumentController extends AbstractController
             'orderBy' => $orderBy,
             'order' => $order,
             'filters' => $filters,
-            'perPage' => self::PER_PAGE,
+            'perPage' => $perPage,
             'maxRows' => $maxRows,
-            'maxPages' => $maxPages
+            'maxPages' => $maxPages,
+            'users' => $users
         ]);
     }
 
@@ -84,7 +87,7 @@ class DocumentController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $code = 'Д-' . (count($this->getDocumentRepository()->findAll()) + 1) . '-' . date('Y');
+        $code = 'Д-' . (count($this->getDocumentRepository()->findAll()) + 1) . '-' . date('Ymd');
 
         $document = new Document();
 
